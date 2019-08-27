@@ -9,29 +9,44 @@ export default function App() {
     const [choices, setChoices] = useState([]);
     const [error, setError] = useState("");
 
+    const swapStrings = text => {
+        const lower = text.toLowerCase();
+        let arr = lower.split("");
+        let newArr = arr.map((letter, i) => {
+            if (letter === "i" || letter === "l") {
+                return 1;
+            } else if (letter === "o") {
+                return 0;
+            }
+        });
+        return newArr.join("");
+    };
+
     const submit = () => {
-        if (!testStrings(text)) {
+        const newStr = swapStrings(text);
+        if (!testStrings(newStr)) {
             setError(
                 "Error: code must be either 10 digit numeric or 8/16 character hex"
             );
             setText("");
         } else {
             const fiveChoices = choices.slice(-4);
-            setChoices([...fiveChoices, text]);
+            setChoices([...fiveChoices, newStr]);
             setText("");
             setError("");
         }
     };
 
     const submitFromQR = d => {
-        if (!testStrings(d)) {
+        const modifiedD = swapStrings(d);
+        if (!testStrings(modifiedD)) {
             setError(
                 "Error: code must be either 10 digit numeric or 8/16 character hex"
             );
             setText("");
         } else {
             const fiveChoices = choices.slice(-4);
-            setChoices([...fiveChoices, d]);
+            setChoices([...fiveChoices, modifiedD]);
             setText("");
             setError("");
         }
@@ -44,12 +59,15 @@ export default function App() {
 
     const testStrings = t => {
         let regexes = {
-            numeric: new RegExp("^[0-9]*$"),
-            hex: new RegExp("[0-9a-fA-F]+")
+            numeric: new RegExp("[0-9]{10}"),
+            hex8: new RegExp("[0-9a-fA-F]{8}"),
+            hex16: new RegExp("[0-9a-fA-F]{16}")
         };
-        if (t.length === 10 && regexes.numeric.test(t)) {
-            return true;
-        } else if ((t.length === 8 || t.length === 16) && regexes.hex.test(t)) {
+        if (
+            regexes.numeric.test(t) ||
+            regexes.hex8.test(t) ||
+            regexes.hex16.test(t)
+        ) {
             return true;
         } else {
             return false;

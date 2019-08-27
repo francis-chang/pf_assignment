@@ -52,12 +52,6 @@ export default class QRReader extends React.Component {
     }
 
     handleBarCodeScanned = ({ type, data }) => {
-        let regexes = {
-            numeric: new RegExp("^[0-9]*$")
-        };
-        if (data.length === 10) {
-            rege;
-        }
         this.props.submit(data);
         this.props.setOpenQR(false);
     };
